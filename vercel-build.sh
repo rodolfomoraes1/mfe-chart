@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e  # Para o script se qualquer comando falhar
+set -e
 
 echo "====================================="
 echo "🔍 DIAGNÓSTICO COMPLETO - VERCEL"
@@ -10,7 +10,15 @@ echo "📂 Diretório atual:"
 pwd
 echo ""
 
-echo "📋 Listando arquivos na raiz:"
+echo "📂 Diretório pai:"
+cd .. && pwd && cd -
+echo ""
+
+echo "📂 Listando tudo desde a raiz do projeto:"
+find . -name "angular.json" -type f 2>/dev/null || echo "Procurando angular.json..."
+echo ""
+
+echo "📋 Listando arquivos na raiz (completo):"
 ls -la
 echo ""
 
@@ -24,11 +32,15 @@ echo ""
 
 echo "📋 Verificando angular.json:"
 if [ -f "angular.json" ]; then
-  echo "✅ angular.json encontrado"
+  echo "✅ angular.json encontrado na raiz"
   echo "Conteúdo (primeiras linhas):"
   head -20 angular.json
 else
-  echo "❌ angular.json NÃO encontrado!"
+  echo "❌ angular.json NÃO encontrado na raiz!"
+  
+  # Procurar angular.json em qualquer lugar
+  echo "Procurando angular.json em subpastas..."
+  find . -name "angular.json" -type f 2>/dev/null || echo "Não encontrado em lugar nenhum!"
 fi
 echo ""
 
