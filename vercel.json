@@ -1,14 +1,5 @@
 {
-  "name": "mfe-chart",
-  "version": 2,
   "buildCommand": "npx ng build --configuration=production --output-hashing=none",
   "outputDirectory": "dist/mfe-chart/browser",
-  "devCommand": "npm start",
-  "installCommand": "npm install",
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ]
+  "installCommand": "npm install"
 }
