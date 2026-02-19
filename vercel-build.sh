@@ -6,16 +6,40 @@ echo "🔍 DIAGNÓSTICO COMPLETO - VERCEL"
 echo "====================================="
 echo ""
 
-echo "📂 Diretório atual:"
+echo "📂 Diretório atual ANTES de qualquer coisa:"
 pwd
 echo ""
 
-echo "📂 Diretório pai:"
-cd .. && pwd && cd -
-echo ""
+echo "📂 Procurando pela raiz do projeto (onde está angular.json)..."
 
-echo "📂 Listando tudo desde a raiz do projeto:"
-find . -name "angular.json" -type f 2>/dev/null || echo "Procurando angular.json..."
+# Função para encontrar a raiz do projeto
+find_project_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/angular.json" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
+
+PROJECT_ROOT=$(find_project_root)
+
+if [[ -n "$PROJECT_ROOT" ]]; then
+    echo "✅ Raiz do projeto encontrada: $PROJECT_ROOT"
+    echo "📂 Mudando para a raiz do projeto..."
+    cd "$PROJECT_ROOT"
+else
+    echo "❌ Não foi possível encontrar a raiz do projeto!"
+    echo "Procurando angular.json em todo o sistema de arquivos..."
+    find / -name "angular.json" -type f 2>/dev/null | head -10 || echo "Nenhum angular.json encontrado"
+fi
+
+echo ""
+echo "📂 Diretório atual APÓS busca:"
+pwd
 echo ""
 
 echo "📋 Listando arquivos na raiz (completo):"
@@ -32,15 +56,11 @@ echo ""
 
 echo "📋 Verificando angular.json:"
 if [ -f "angular.json" ]; then
-  echo "✅ angular.json encontrado na raiz"
+  echo "✅ angular.json encontrado!"
   echo "Conteúdo (primeiras linhas):"
   head -20 angular.json
 else
-  echo "❌ angular.json NÃO encontrado na raiz!"
-  
-  # Procurar angular.json em qualquer lugar
-  echo "Procurando angular.json em subpastas..."
-  find . -name "angular.json" -type f 2>/dev/null || echo "Não encontrado em lugar nenhum!"
+  echo "❌ angular.json NÃO encontrado!"
 fi
 echo ""
 
@@ -50,10 +70,6 @@ echo ""
 
 echo "📦 Versão do NPM:"
 npm --version
-echo ""
-
-echo "📦 Instalando dependências..."
-npm install
 echo ""
 
 echo "🔧 Verificando Angular CLI local:"
