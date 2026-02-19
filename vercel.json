@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx ng build --configuration=production --output-hashing=none",
+  "buildCommand": "./vercel-build.sh",
   "outputDirectory": "dist/mfe-chart/browser",
   "installCommand": "npm install"
 }
