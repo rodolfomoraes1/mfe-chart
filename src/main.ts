@@ -1,6 +1,17 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { createApplication } from '@angular/platform-browser';
+import { createCustomElement } from '@angular/elements';
+import { BarChart } from './app/bar-chart/bar-chart';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+(async () => {
+  const app = await createApplication({
+    providers: [],
+  });
+
+  const element = createCustomElement(BarChart, {
+    injector: app.injector,
+  });
+
+  if (!customElements.get('mfe-bar-chart')) {
+    customElements.define('mfe-bar-chart', element);
+  }
+})();
