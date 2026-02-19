@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx ng build --configuration=production",
+  "outputDirectory": "dist/mfe-chart",
+  "installCommand": "npm install",
+  "framework": "angular"
+}
