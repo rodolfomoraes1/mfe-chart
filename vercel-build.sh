@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# Removemos o set -e para não parar em erros de busca
 
 echo "====================================="
 echo "🔍 DIAGNÓSTICO COMPLETO - VERCEL"
@@ -10,58 +10,34 @@ echo "📂 Diretório atual ANTES de qualquer coisa:"
 pwd
 echo ""
 
-echo "📂 Procurando pela raiz do projeto (onde está angular.json)..."
-
-# Função para encontrar a raiz do projeto
-find_project_root() {
-    local dir="$PWD"
-    while [[ "$dir" != "/" ]]; do
-        if [[ -f "$dir/angular.json" ]]; then
-            echo "$dir"
-            return 0
-        fi
-        dir="$(dirname "$dir")"
-    done
-    return 1
-}
-
-PROJECT_ROOT=$(find_project_root)
-
-if [[ -n "$PROJECT_ROOT" ]]; then
-    echo "✅ Raiz do projeto encontrada: $PROJECT_ROOT"
-    echo "📂 Mudando para a raiz do projeto..."
-    cd "$PROJECT_ROOT"
-else
-    echo "❌ Não foi possível encontrar a raiz do projeto!"
-    echo "Procurando angular.json em todo o sistema de arquivos..."
-    find / -name "angular.json" -type f 2>/dev/null | head -10 || echo "Nenhum angular.json encontrado"
-fi
-
-echo ""
-echo "📂 Diretório atual APÓS busca:"
-pwd
-echo ""
-
-echo "📋 Listando arquivos na raiz (completo):"
+echo "📂 Listando arquivos no diretório atual:"
 ls -la
 echo ""
 
-echo "📋 Listando arquivos em src/ (se existir):"
-if [ -d "src" ]; then
-  ls -la src/
-else
-  echo "src/ não encontrado!"
-fi
+echo "📂 Procurando angular.json em subdiretórios..."
+find . -name "angular.json" -type f 2>/dev/null || echo "Nenhum angular.json encontrado"
 echo ""
 
-echo "📋 Verificando angular.json:"
+echo "📂 Verificando se angular.json existe na raiz:"
 if [ -f "angular.json" ]; then
-  echo "✅ angular.json encontrado!"
+  echo "✅ angular.json encontrado na raiz!"
   echo "Conteúdo (primeiras linhas):"
   head -20 angular.json
 else
-  echo "❌ angular.json NÃO encontrado!"
+  echo "❌ angular.json NÃO encontrado na raiz"
+  
+  # Procurar em qualquer lugar
+  echo "Procurando em toda a árvore do projeto..."
+  find /vercel -name "angular.json" -type f 2>/dev/null | head -5 || echo "Nada encontrado"
 fi
+echo ""
+
+echo "📋 Listando tudo que tem na pasta /vercel:"
+ls -la /vercel/ 2>/dev/null || echo "Não foi possível listar /vercel"
+echo ""
+
+echo "📋 Listando tudo que tem na pasta /vercel/path0:"
+ls -la /vercel/path0/ 2>/dev/null || echo "Não foi possível listar /vercel/path0"
 echo ""
 
 echo "📦 Versão do Node:"
@@ -81,8 +57,27 @@ else
 fi
 echo ""
 
-echo "🏗️  Executando BUILD com caminho absoluto:"
-./node_modules/.bin/ng build --configuration=production --output-hashing=none
+echo "🏗️  Tentando BUILD no diretório atual:"
+if [ -f "angular.json" ]; then
+  ./node_modules/.bin/ng build --configuration=production --output-hashing=none
+else
+  echo "⚠️ angular.json não encontrado, não é possível fazer build aqui"
+  
+  # Tentar encontrar e entrar na pasta correta
+  ANGULAR_PATH=$(find . -name "angular.json" -type f | head -1)
+  if [ -n "$ANGULAR_PATH" ]; then
+    ANGULAR_DIR=$(dirname "$ANGULAR_PATH")
+    echo "✅ Encontrado angular.json em: $ANGULAR_DIR"
+    echo "📂 Mudando para: $ANGULAR_DIR"
+    cd "$ANGULAR_DIR"
+    echo "📂 Novo diretório: $(pwd)"
+    echo "🏗️  Executando build agora..."
+    ./node_modules/.bin/ng build --configuration=production --output-hashing=none
+  else
+    echo "❌ Não foi possível encontrar angular.json em lugar nenhum!"
+    exit 1
+  fi
+fi
 echo ""
 
 echo "📂 Verificando resultado do build:"
@@ -91,6 +86,8 @@ if [ -d "dist/mfe-chart/browser" ]; then
   ls -la dist/mfe-chart/browser
 else
   echo "❌ Build não gerado!"
+  echo "Procurando por pasta dist em qualquer lugar:"
+  find . -name "dist" -type d 2>/dev/null || echo "Nenhuma pasta dist encontrada"
 fi
 
 echo "====================================="
