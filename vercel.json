@@ -1,5 +1,5 @@
 {
-  "buildCommand": "./vercel-build.sh",
-  "outputDirectory": "dist/mfe-chart/browser",
+  "buildCommand": "ng build --configuration=production",
+  "outputDirectory": "dist/mfe-chart",
   "installCommand": "npm install"
 }
