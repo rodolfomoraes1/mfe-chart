@@ -1,4 +1,4 @@
-# MfeChart
+# MfeChart v1.0.1
 
 Este projeto foi criado usando [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
 

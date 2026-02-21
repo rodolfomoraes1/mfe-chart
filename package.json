@@ -1,7 +1,7 @@
 {
   "name": "@rodolfomoraes1/mfe-chart",
-  "version": "1.0.0",
-  "description": "Angular chart component as Web Component - Mind Ease",
+  "version": "1.0.1",
+  "description": "Angular chart component as Web Component",
   "main": "dist/mfe-chart/browser/main.js",
   "module": "dist/mfe-chart/browser/main.js",
   "types": "dist/mfe-chart/browser/index.d.ts",
