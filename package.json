@@ -1,14 +1,24 @@
 {
-  "name": "mfe-chart",
-  "version": "0.0.0",
+  "name": "@rodolfomoraes1/mfe-chart",
+  "version": "1.0.0",
+  "description": "Angular chart component as Web Component - Mind Ease",
+  "main": "dist/mfe-chart/browser/main.js",
+  "module": "dist/mfe-chart/browser/main.js",
+  "types": "dist/mfe-chart/browser/index.d.ts",
+  "files": [
+    "dist/mfe-chart/browser/**/*.js",
+    "dist/mfe-chart/browser/**/*.css"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration=production --output-hashing=none",
     "build:mfe": "ng build --configuration=production --output-hashing=none",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "preview": "serve dist/mfe-chart/browser -p 3000"
+    "preview": "serve dist/mfe-chart/browser -p 3000",
+    "prepublishOnly": "npm run build",
+    "publish:public": "npm publish --access public"
   },
   "prettier": {
     "printWidth": 100,
@@ -22,8 +32,27 @@
       }
     ]
   },
-  "private": true,
-  "packageManager": "npm@10.9.2",
+  "keywords": [
+    "angular",
+    "webcomponent",
+    "chart",
+    "microfrontend",
+    "mind-ease",
+    "tdah"
+  ],
+  "author": "Rodolfo Moraes",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodolfomoraes1/mfe-chart.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rodolfomoraes1/mfe-chart/issues"
+  },
+  "homepage": "https://github.com/rodolfomoraes1/mfe-chart#readme",
+  "peerDependencies": {
+    "chart.js": "^4.5.1"
+  },
   "dependencies": {
     "@angular/common": "^21.1.0",
     "@angular/compiler": "^21.1.0",
@@ -32,7 +61,6 @@
     "@angular/forms": "^21.1.0",
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
-    "chart.js": "^4.5.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

@@ -160,3 +160,5 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
     };
   }
 }
+
+export type { BarChartProps as BarChartPropsType } from './bar-chart.types';
