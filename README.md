@@ -12,7 +12,7 @@ Este projeto exporta um gráfico de barras customizável.
 
 ## Executar localmente
 
-`npm run stat`
+`npm run start`
 
 Acesse: `http://localhost:4200/`
 
