@@ -25,12 +25,10 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    // Aqui o componente foi criado mas o canvas ainda não existe
     console.log('BarChart initialized');
   }
 
   ngAfterViewInit(): void {
-    // AFTER VIEW INIT é o momento correto para acessar o canvas
     this.canvas = this.el.nativeElement.querySelector('canvas');
     this.isViewInitialized = true;
     
@@ -46,7 +44,6 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
       return;
     }
     
-    // Pequeno delay para garantir que o DOM está estável
     setTimeout(() => this.renderChart(), 0);
   }
 
@@ -56,18 +53,22 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    // Destrói chart anterior se existir
     if (this.chart) {
       this.chart.destroy();
     }
 
-    // Configura dimensões
     this.canvas.style.height = this.height;
     this.canvas.style.width = this.width;
 
-    // Prepara os dados
+    // Prepara os dados - GARANTE QUE NÃO É UNDEFINED
     const chartData = this.prepareChartData();
     
+    // Verificação de segurança
+    if (!chartData || !chartData.datasets) {
+      console.error('Dados do gráfico inválidos:', chartData);
+      return;
+    }
+
     // Cores padrão
     const defaultColors = [
       'rgba(54, 162, 235, 0.7)',
@@ -78,13 +79,15 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
       'rgba(255, 159, 64, 0.7)'
     ];
 
-    // Aplica cores
-    if (chartData.datasets) {
+    // Aplica cores com verificação de segurança
+    if (chartData.datasets && Array.isArray(chartData.datasets)) {
       chartData.datasets.forEach((dataset: any, index: number) => {
+        if (!dataset) return; // Pula se dataset for undefined
+        
         if (!dataset.backgroundColor) {
           dataset.backgroundColor = this.colors[index] || defaultColors[index % defaultColors.length];
         }
-        if (!dataset.borderColor) {
+        if (!dataset.borderColor && dataset.backgroundColor) {
           dataset.borderColor = dataset.backgroundColor.replace('0.7', '1');
         }
       });
@@ -131,17 +134,25 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
   }
 
   private prepareChartData(): any {
-    if (this.data) return this.data;
-    
+    // Prioridade 1: data completo foi fornecido
+    if (this.data) {
+      return this.data;
+    }
+
+    // Prioridade 2: datasets foram fornecidos
     if (this.datasets && this.datasets.length > 0) {
       return {
-        labels: this.labels,
+        labels: this.labels || [],
         datasets: this.datasets
       };
     }
 
+    // Prioridade 3: values foram fornecidos (série única)
     if (this.values && this.values.length > 0) {
-      const labels = this.labels.length > 0 ? this.labels : this.values.map((_, i) => `Item ${i + 1}`);
+      const labels = this.labels && this.labels.length > 0 
+        ? this.labels 
+        : this.values.map((_, i) => `Item ${i + 1}`);
+      
       return {
         labels: labels,
         datasets: [{
@@ -151,6 +162,7 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
       };
     }
 
+    // Fallback: dados de exemplo
     return {
       labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
       datasets: [{
@@ -161,4 +173,4 @@ export class BarChart implements OnInit, AfterViewInit, OnChanges {
   }
 }
 
-export type { BarChartProps as BarChartPropsType } from './bar-chart.types';
+export type { BarChartProps } from './bar-chart.types';
